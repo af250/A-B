@@ -1,5 +1,5 @@
 # A-B
-A/B Testing code for analyse two sepearate trading stragies. 
+A/B Testing code for analyse two separate trading strategies. 
 
 
 ## Overview
