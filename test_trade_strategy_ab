@@ -1,0 +1,41 @@
+import pandas as pd
+import numpy as np
+from scipy.stats import ttest_ind, mannwhitneyu, chi2_contingency
+
+# Load dataset
+data = pd.read_csv("trade_data.csv")
+
+# Split into Strategy A and B
+strategy_A = data[data["strategy"] == "A"]
+strategy_B = data[data["strategy"] == "B"]
+
+### 1. t-Test: Comparing Mean Profitability
+t_stat, p_value_profit = ttest_ind(strategy_A["profit"], strategy_B["profit"], equal_var=False)
+print(f"t-Test on Profit: t-stat = {t_stat:.4f}, p-value = {p_value_profit:.4f}")
+
+### 2. Mann-Whitney U Test: Comparing Slippage
+u_stat, p_value_slippage = mannwhitneyu(strategy_A["slippage"], strategy_B["slippage"])
+print(f"Mann-Whitney U Test on Slippage: U-stat = {u_stat:.4f}, p-value = {p_value_slippage:.4f}")
+
+### 3. Chi-Square Test: Win/Loss Rate
+data["win"] = (data["profit"] > 0).astype(int)
+contingency_table = pd.crosstab(data["strategy"], data["win"])
+chi2, p_value_chi2, dof, expected = chi2_contingency(contingency_table)
+print(f"Chi-Square Test on Win Rate: Chi2 = {chi2:.4f}, p-value = {p_value_chi2:.4f}")
+
+### Interpretation
+alpha = 0.05
+if p_value_profit < alpha:
+    print("Strategy A and B have significantly different profitability.")
+else:
+    print("No significant difference in profitability.")
+
+if p_value_slippage < alpha:
+    print("Strategy A and B have significantly different slippage performance.")
+else:
+    print("No significant difference in slippage.")
+
+if p_value_chi2 < alpha:
+    print("Strategy A and B have significantly different win/loss rates.")
+else:
+    print("No significant difference in win/loss rates.")
